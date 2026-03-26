@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eGain BDR Prospector</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --egain-purple: #5A1F8C;
+    --egain-violet: #7B3FB5;
+    --egain-purple-light: #EDE4F7;
+    --egain-teal: #00A99D;
+    --egain-teal-light: #E0F5F4;
+    --bg: #F7F5FB;
+    --bg-white: #FFFFFF;
+    --text-dark: #1A1030;
+    --text-body: #3D2F5A;
+    --text-muted: #7E6A9A;
+    --card-bg: #FFFFFF;
+    --card-border: #E2D9EF;
+    --success: #00A99D;
+    --warning: #F5A623;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-body);
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 0 40px;
+    height: 64px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-white);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(90,31,140,0.06);
+  }
+
+  .logo {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--egain-purple);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--egain-teal); }
+
+  .badge {
+    background: var(--egain-purple-light);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: var(--egain-purple);
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
+
+  .hero {
+    margin-bottom: 48px;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--egain-purple);
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  /* Steps */
+  .step-nav {
+    display: flex;
+    gap: 0;
+    margin-bottom: 40px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-white);
+  }
+
+  .step-btn {
+    flex: 1;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    border-right: 1px solid var(--card-border);
+    position: relative;
+  }
+  .step-btn:last-child { border-right: none; }
+  .step-btn.active {
+    background: var(--egain-purple);
+    color: white;
+  }
+  .step-btn.done {
+    color: var(--egain-teal);
+  }
+  .step-btn.done .step-num { background: var(--egain-teal); color: white; }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--egain-purple-light);
+    color: var(--egain-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-btn.active .step-num { background: rgba(255,255,255,0.25); color: white; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 6px rgba(90,31,140,0.05);
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .card-subtitle {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text-dark);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus {
+    border-color: var(--egain-purple);
+    box-shadow: 0 0 0 3px rgba(90,31,140,0.08);
+  }
+  textarea { resize: vertical; min-height: 100px; }
+  select option { background: white; color: var(--text-dark); }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .field-row .field { margin-bottom: 0; }
+
+  .field {
+    margin-bottom: 20px;
+  }
+  .field input, .field select, .field textarea {
+    margin-bottom: 0;
+  }
+
+  /* Persona pills */
+  .persona-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .persona-pill {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--card-border);
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .persona-pill:hover { border-color: var(--egain-purple); color: var(--egain-purple); }
+  .persona-pill.selected {
+    background: var(--egain-purple);
+    border-color: var(--egain-purple);
+    color: white;
+  }
+
+  /* URL tags */
+  .url-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .url-tag {
+    background: var(--egain-purple-light);
+    border: 1px solid #D4C0EE;
+    border-radius: 6px;
+    padding: 4px 10px 4px 12px;
+    font-size: 12px;
+    color: var(--egain-purple);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+  .url-tag button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+  }
+  .url-tag button:hover { color: var(--egain-purple); }
+
+  .url-add-row {
+    display: flex;
+    gap: 10px;
+  }
+  .url-add-row input { margin-bottom: 0; flex: 1; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--egain-purple);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 26px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-primary:hover { background: var(--egain-violet); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(90,31,140,0.25); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--card-border);
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--egain-purple); color: var(--egain-purple); }
+
+  .btn-mint {
+    background: var(--egain-teal);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-mint:hover { opacity: 0.88; }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  /* Loading */
+  .loading-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid var(--egain-purple-light);
+    border-top-color: var(--egain-purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-label {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+  /* Output sections */
+  .output-section {
+    margin-bottom: 24px;
+  }
+
+  .output-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .output-label-text {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .output-label-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .trigger-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .trigger-item {
+    background: var(--egain-teal-light);
+    border: 1px solid #B2E5E2;
+    border-left: 3px solid var(--egain-teal);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+
+  .trigger-item strong {
+    color: var(--egain-teal);
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .email-block {
+    background: var(--bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .email-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-white);
+  }
+
+  .email-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .email-subject-line {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+
+  .email-from {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .email-body {
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text-body);
+    white-space: pre-wrap;
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg-white);
+  }
+
+  .copy-btn {
+    background: var(--egain-purple-light);
+    border: 1px solid #D4C0EE;
+    color: var(--egain-purple);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Nunito Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: var(--egain-purple); color: white; }
+  .copy-btn.copied { background: var(--egain-teal); border-color: var(--egain-teal); color: white; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--card-border);
+    margin: 28px 0;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--egain-purple);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Page panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Tech stack tags */
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .tech-tag {
+    background: #FFF4E0;
+    border: 1px solid #F5D898;
+    color: #8A6000;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .research-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 0;
+  }
+
+  .research-cell {
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .research-cell-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .research-cell-body {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+
+  .persona-inferred {
+    background: var(--egain-purple-light);
+    border: 1px solid #D4C0EE;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--egain-purple);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .page-subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  .error-msg {
+    background: #FFF0F0;
+    border: 1px solid #FFCCCC;
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: #CC3333;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .field-row { grid-template-columns: 1fr; }
+    .research-grid { grid-template-columns: 1fr; }
+    .step-btn .step-label { display: none; }
+    header { padding: 0 20px; }
+    .container { padding: 32px 16px; }
+    .hero h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">e<span>G</span>ain</div>
+  <div class="badge">BDR Prospector</div>
+</header>
+
+<div class="container">
+  <div class="hero">
+    <h1>Outbound that actually <em>lands.</em></h1>
+    <p>Stop sending generic blasts. Enter a prospect and let AI do the research — then get a hyper-personalized email and account brief ready to send.</p>
+  </div>
+
+  <div class="step-nav">
+    <button class="step-btn active" onclick="goToStep(1)" id="step-nav-1">
+      <div class="step-num">1</div>
+      <span class="step-label">Prospect Info</span>
+    </button>
+    <button class="step-btn" onclick="goToStep(2)" id="step-nav-2">
+      <div class="step-num">2</div>
+      <span class="step-label">Research</span>
+    </button>
+    <button class="step-btn" onclick="goToStep(3)" id="step-nav-3">
+      <div class="step-num">3</div>
+      <span class="step-label">Email Draft</span>
+    </button>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="panel active" id="panel-1">
+    <div class="card">
+      <div class="card-title">Prospect Details</div>
+      <div class="card-subtitle">Enter the basics. The more you give, the sharper the output.</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>First Name *</label>
+          <input type="text" id="fname" placeholder="Sarah">
+        </div>
+        <div class="field">
+          <label>Last Name *</label>
+          <input type="text" id="lname" placeholder="Chen">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Job Title *</label>
+          <input type="text" id="title" placeholder="VP of Customer Experience">
+        </div>
+        <div class="field">
+          <label>Company *</label>
+          <input type="text" id="company" placeholder="Acme Insurance Co.">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>LinkedIn URL (optional but highly recommended)</label>
+        <input type="text" id="linkedin" placeholder="https://linkedin.com/in/sarahchen">
+      </div>
+
+      <div class="field">
+        <label>Your Name (BDR)</label>
+        <input type="text" id="bdr-name" placeholder="Alex Rivera">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Persona Override</div>
+      <div class="card-subtitle">We'll infer the persona from their title automatically. Override if needed.</div>
+
+      <div class="persona-pills">
+        <button class="persona-pill" onclick="selectPersona(this, 'auto')">🤖 Auto-detect</button>
+        <button class="persona-pill" onclick="selectPersona(this, 'CCO / CX Leader')">CCO / CX Leader</button>
+        <button class="persona-pill" onclick="selectPersona(this, 'Contact Center VP/Director')">Contact Center VP/Dir</button>
+        <button class="persona-pill" onclick="selectPersona(this, 'Knowledge Manager')">Knowledge Manager</button>
+        <button class="persona-pill" onclick="selectPersona(this, 'Digital / Self-Service Leader')">Digital / Self-Service</button>
+        <button class="persona-pill" onclick="selectPersona(this, 'IT / Technology Leader')">IT / Tech Leader</button>
+        <button class="persona-pill" onclick="selectPersona(this, 'HR / L&D Leader')">HR / L&D Leader</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Website Visit Intent Signals</div>
+      <div class="card-subtitle">Paste URLs from their company's anonymous session on eGain.com. Each URL visited is a signal of interest — we'll interpret it and use it in outreach.</div>
+
+      <div class="url-tags" id="url-tags"></div>
+      <div class="url-add-row">
+        <input type="text" id="url-input" placeholder="https://egain.com/ai-knowledge-hub/" onkeydown="if(event.key==='Enter') addUrl()">
+        <button class="btn-mint" onclick="addUrl()">+ Add</button>
+      </div>
+    </div>
+
+    <div id="step1-error" class="error-msg" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="runResearch()">
+        <span>🔍</span> Research Prospect
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="panel" id="panel-2">
+    <div id="research-loading" class="card loading-block" style="display:none;">
+      <div class="spinner"></div>
+      <div class="loading-label" id="loading-label">Searching for intel on your prospect...</div>
+    </div>
+
+    <div id="research-output" style="display:none;">
+      <div class="card">
+        <div class="card-title" id="research-prospect-name">Account & Prospect Brief</div>
+        <div class="card-subtitle">AI-compiled intel. Review, edit, or add notes before generating your email.</div>
+
+        <div id="persona-inferred-box" class="persona-inferred" style="display:none;">
+          <span>🎯</span>
+          <span id="persona-inferred-text"></span>
+        </div>
+
+        <div class="research-grid" id="research-grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Outreach Triggers</div>
+        <div class="card-subtitle">Specific "reasons to reach out" surfaced from research. These will anchor your email.</div>
+        <div class="trigger-list" id="trigger-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Your Notes</div>
+        <div class="card-subtitle">Anything else you know? Extra context, a conversation you've had, a referral, etc.</div>
+        <textarea id="extra-notes" placeholder="e.g. Met briefly at Solve25 conference. They mentioned they're mid-evaluation of a KM vendor..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="runEmail()">
+          <span>✉️</span> Draft Email
+        </button>
+        <button class="btn-secondary" onclick="goToStep(1)">← Edit Inputs</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="panel" id="panel-3">
+    <div id="email-loading" class="card loading-block" style="display:none;">
+      <div class="spinner"></div>
+      <div class="loading-label" id="email-loading-label">Crafting your personalized email...</div>
+    </div>
+
+    <div id="email-output" style="display:none;">
+      <div class="card">
+        <div class="card-title">Your Personalized Email</div>
+        <div class="card-subtitle">Review and send. Edit directly in the fields below.</div>
+
+        <div class="email-block">
+          <div class="email-header">
+            <div class="email-meta">
+              <div class="email-subject-line" id="email-subject-display"></div>
+              <div class="email-from">From: <span id="bdr-display"></span> · To: <span id="prospect-display"></span></div>
+            </div>
+            <button class="copy-btn" onclick="copyEmail(this)">Copy Email</button>
+          </div>
+          <div class="email-body" id="email-body-display" contenteditable="true"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="copyEmail(document.querySelector('.copy-btn'))">
+          <span>📋</span> Copy to Clipboard
+        </button>
+        <button class="btn-secondary" onclick="runEmail()">↺ Regenerate</button>
+        <button class="btn-secondary" onclick="goToStep(2)">← Back to Research</button>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <button class="btn-secondary" onclick="resetAll()" style="font-size:13px;">+ Start New Prospect</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// ---- State ----
+let state = {
+  urls: [],
+  persona: 'auto',
+  researchData: null,
+  currentStep: 1
+};
+
+function selectPersona(el, val) {
+  document.querySelectorAll('.persona-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  state.persona = val;
+}
+// Default select auto
+document.querySelector('.persona-pill').classList.add('selected');
+
+function addUrl() {
+  const input = document.getElementById('url-input');
+  const val = input.value.trim();
+  if (!val) return;
+  if (!state.urls.includes(val)) {
+    state.urls.push(val);
+    renderUrlTags();
+  }
+  input.value = '';
+}
+
+function removeUrl(idx) {
+  state.urls.splice(idx, 1);
+  renderUrlTags();
+}
+
+function renderUrlTags() {
+  const container = document.getElementById('url-tags');
+  container.innerHTML = state.urls.map((url, i) => `
+    <div class="url-tag">
+      <span>${url.replace('https://','').replace('http://','').replace('www.','').split('/')[0]} → ${url.split('/').filter(Boolean).pop() || 'home'}</span>
+      <button onclick="removeUrl(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function goToStep(n) {
+  if (n > state.currentStep && n !== state.currentStep + 1) return;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${n}`).classList.add('active');
+
+  document.querySelectorAll('.step-btn').forEach((btn, i) => {
+    btn.classList.remove('active', 'done');
+    if (i + 1 < n) btn.classList.add('done');
+    if (i + 1 === n) btn.classList.add('active');
+  });
+
+  state.currentStep = n;
+}
+
+function showError(msg) {
+  const el = document.getElementById('step1-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+// ---- RESEARCH ----
+async function runResearch() {
+  const fname = document.getElementById('fname').value.trim();
+  const lname = document.getElementById('lname').value.trim();
+  const title = document.getElementById('title').value.trim();
+  const company = document.getElementById('company').value.trim();
+
+  if (!fname || !lname || !title || !company) {
+    showError('Please fill in First Name, Last Name, Title, and Company before continuing.');
+    return;
+  }
+
+  const linkedin = document.getElementById('linkedin').value.trim();
+  const urls = state.urls;
+
+  goToStep(2);
+  document.getElementById('research-loading').style.display = 'flex';
+  document.getElementById('research-output').style.display = 'none';
+
+  const loadingMessages = [
+    `Searching for intel on ${fname} ${lname}...`,
+    `Digging into ${company}'s recent news and strategy...`,
+    `Mapping eGain relevance to their priorities...`,
+    `Building your prospect brief...`
+  ];
+  let msgIdx = 0;
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMessages.length;
+    document.getElementById('loading-label').textContent = loadingMessages[msgIdx];
+  }, 3500);
+
+  const urlContext = urls.length > 0
+    ? `\n\nWebsite Visit Signals (anonymous visit from ${company} domain on eGain.com):\n${urls.map(u => `- ${u}`).join('\n')}`
+    : '';
+
+  const personaHint = state.persona !== 'auto'
+    ? `\nPersona override selected by BDR: ${state.persona}`
+    : '';
+
+  const prompt = `You are an expert B2B sales intelligence researcher for eGain (NASDAQ: EGAN), an AI-powered Knowledge Management and Customer Experience platform. Your job is to help BDRs build hyper-personalized outreach.
+
+PROSPECT:
+- Name: ${fname} ${lname}
+- Title: ${title}
+- Company: ${company}
+- LinkedIn: ${linkedin || 'Not provided'}${urlContext}${personaHint}
+
+ABOUT EGAIN:
+eGain is the #1 AI Knowledge Management platform for customer experience automation. Key products:
+1. eGain AI Knowledge Hub™ - AI-powered single source of truth for contact centers, delivering trusted answers to agents and AI systems. Reduces AHT, improves FCR, boosts CSAT/NPS. Eliminates "content chaos" (worth $31B annually in lost productivity).
+2. eGain AI Agent™ - Real-time AI guidance for contact center agents, monitoring conversations and surfacing step-by-step guidance so every agent performs like an expert. Built for Cisco Webex, Salesforce, Genesys, Five9, etc.
+3. eGain Composer™ - Modular AI Knowledge development platform for building trusted AI CX applications.
+4. eGain Conversation Hub - Omnichannel customer engagement across messaging, chat, email, social.
+5. eGain Analytics Hub - CX analytics and insights.
+eGain serves industries: Financial Services/Banking, Insurance, Retail, Telecom, Healthcare, Government, Travel, Manufacturing. Competitors include Salesforce Knowledge, ServiceNow, Verint, NICE, Genesys.
+eGain's key value props: Trusted Knowledge (not hallucinating AI), measurable AI ROI, reduce AHT by 30%+, improve FCR, lower agent training cost, self-service deflection up to 60%, compliance-grade knowledge.
+
+YOUR TASK:
+Research this prospect and company using your knowledge and reasoning. Return a JSON object with this EXACT structure (no markdown, no extra text, just raw JSON):
+
+{
+  "inferredPersona": "string - infer from title which persona they map to: CCO/CX Leader | Contact Center VP/Director | Knowledge Manager | Digital/Self-Service Leader | IT/Tech Leader | HR/L&D Leader",
+  "personaRationale": "1 sentence why",
+  "companySnapshot": "2-3 sentences: what the company does, size/scale, industry",
+  "recentNews": "2-3 sentences about recent news, press releases, earnings, strategic moves, leadership changes",
+  "strategicInitiatives": "2-3 sentences on known digital transformation, CX, or AI initiatives",
+  "techStack": ["array of known or likely CRM/contact center/knowledge tools they use"],
+  "painSignals": "2-3 sentences on likely pain points relevant to eGain based on industry and what you know about them",
+  "websiteSignals": "interpretation of what eGain pages they visited suggests about their interest/stage (or 'No website signals provided' if none)",
+  "triggers": [
+    {
+      "type": "Recent News | Strategic Initiative | Leadership Change | Tech Stack | Website Intent | Industry Trend",
+      "headline": "short trigger label",
+      "detail": "1-2 sentences explaining the trigger and why it makes this prospect ripe for eGain outreach"
+    }
+  ],
+  "eGainAngle": "The single best eGain product/message angle for this persona and company, and why"
+}
+
+Be specific. Use real knowledge about the company if you have it. If the company is not well known, reason from industry norms. Generate 3-5 triggers minimum.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1800,
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    clearInterval(msgInterval);
+
+    const fullText = data.content
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('');
+
+    let parsed;
+    try {
+      const jsonMatch = fullText.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch(e) {
+      parsed = null;
+    }
+
+    document.getElementById('research-loading').style.display = 'none';
+    document.getElementById('research-output').style.display = 'block';
+
+    if (parsed) {
+      state.researchData = parsed;
+      state.researchData._prospect = { fname, lname, title, company, linkedin };
+      renderResearch(parsed, fname, lname, company);
+    } else {
+      // fallback: show raw text
+      state.researchData = { _raw: fullText, _prospect: { fname, lname, title, company, linkedin } };
+      document.getElementById('research-grid').innerHTML = `<div class="research-cell" style="grid-column:1/-1"><div class="research-cell-label">Research Notes</div><div class="research-cell-body" style="white-space:pre-wrap">${fullText}</div></div>`;
+      document.getElementById('trigger-list').innerHTML = '';
+      document.getElementById('research-prospect-name').textContent = `${fname} ${lname} @ ${company}`;
+    }
+
+  } catch(err) {
+    clearInterval(msgInterval);
+    document.getElementById('research-loading').style.display = 'none';
+    document.getElementById('research-output').style.display = 'block';
+    document.getElementById('research-grid').innerHTML = `<div class="research-cell" style="grid-column:1/-1"><div class="research-cell-body" style="color:#ff8888;">Error: ${err.message}. Please check your connection and try again.</div></div>`;
+  }
+}
+
+function renderResearch(d, fname, lname, company) {
+  document.getElementById('research-prospect-name').textContent = `${fname} ${lname} @ ${company}`;
+
+  if (d.inferredPersona) {
+    document.getElementById('persona-inferred-box').style.display = 'flex';
+    document.getElementById('persona-inferred-text').textContent =
+      `Inferred Persona: ${d.inferredPersona} — ${d.personaRationale || ''}`;
+  }
+
+  const cells = [
+    { label: '🏢 Company Snapshot', body: d.companySnapshot },
+    { label: '📰 Recent News', body: d.recentNews },
+    { label: '🚀 Strategic Initiatives', body: d.strategicInitiatives },
+    { label: '⚡ Pain Signals', body: d.painSignals },
+    { label: '🌐 Website Visit Intent', body: d.websiteSignals },
+    { label: '🎯 Best eGain Angle', body: d.eGainAngle },
+  ];
+
+  const techStack = d.techStack && d.techStack.length > 0
+    ? `<div class="research-cell"><div class="research-cell-label">🔧 Known / Likely Tech Stack</div><div class="tech-tags">${d.techStack.map(t => `<span class="tech-tag">${t}</span>`).join('')}</div></div>`
+    : '';
+
+  document.getElementById('research-grid').innerHTML =
+    cells.filter(c => c.body).map(c => `
+      <div class="research-cell">
+        <div class="research-cell-label">${c.label}</div>
+        <div class="research-cell-body">${c.body}</div>
+      </div>
+    `).join('') + techStack;
+
+  if (d.triggers && d.triggers.length > 0) {
+    document.getElementById('trigger-list').innerHTML = d.triggers.map(t => `
+      <div class="trigger-item">
+        <strong>${t.type}: ${t.headline}</strong>
+        ${t.detail}
+      </div>
+    `).join('');
+  }
+}
+
+// ---- EMAIL ----
+async function runEmail() {
+  if (!state.researchData) return;
+
+  const d = state.researchData;
+  const p = d._prospect;
+  const bdrName = document.getElementById('bdr-name').value.trim() || 'Your Name';
+  const extraNotes = document.getElementById('extra-notes').value.trim();
+
+  document.getElementById('research-output').style.display = 'none';
+  goToStep(3);
+  document.getElementById('email-loading').style.display = 'flex';
+  document.getElementById('email-output').style.display = 'none';
+
+  const loadingMessages = [
+    'Drafting your personalized opening...',
+    'Weaving in the best trigger...',
+    'Connecting to eGain value props...',
+    'Polishing the CTA...'
+  ];
+  let msgIdx = 0;
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMessages.length;
+    document.getElementById('email-loading-label').textContent = loadingMessages[msgIdx];
+  }, 2500);
+
+  const researchContext = d._raw
+    ? d._raw
+    : `
+Persona: ${d.inferredPersona}
+Company: ${d.companySnapshot}
+Recent news: ${d.recentNews}
+Strategic initiatives: ${d.strategicInitiatives}
+Pain signals: ${d.painSignals}
+Website signals: ${d.websiteSignals}
+Best eGain angle: ${d.eGainAngle}
+Top triggers: ${(d.triggers || []).map(t => `${t.type} - ${t.headline}: ${t.detail}`).join(' | ')}
+${extraNotes ? `\nBDR additional notes: ${extraNotes}` : ''}`;
+
+  const emailPrompt = `You are a top-performing enterprise BDR at eGain. You write cold emails that get replies because they sound like a real person who did their homework — not a sales bot reciting talking points.
+
+ABOUT YOU AND EGAIN:
+You work at eGain, which makes an AI Knowledge Management platform for contact centers and CX teams. The core problem eGain solves: agents waste time hunting for answers, give inconsistent responses, and companies can't scale without their knowledge falling apart. eGain fixes that. Key products: AI Knowledge Hub (single source of truth for agents + AI), AI Agent (real-time in-conversation guidance). Used by major brands in financial services, insurance, telecom, retail, healthcare.
+
+WHO YOU'RE WRITING TO:
+- Name: ${p.fname} ${p.lname}
+- Title: ${p.title}  
+- Company: ${p.company}
+- Persona: ${d.inferredPersona || 'Senior CX/Contact Center leader'}
+
+WHAT YOU KNOW ABOUT THEM (from research):
+${researchContext}
+
+YOUR WRITING RULES — READ CAREFULLY:
+1. Sound like a human. Write the way a sharp, confident professional texts a peer. No corporate speak.
+2. Pick ONE trigger from the research — the most specific and compelling one. Build the whole email around it.
+3. The opening line must reference something REAL and SPECIFIC about them or their company. Not a compliment — an observation.
+4. ONE connection to eGain. Not a feature dump. One sentence on what problem you solve that relates to their world.
+5. End with a low-friction ask. "Worth a quick chat?" or "Open to connecting?" — nothing that sounds like a calendar invite demand.
+6. Total length: 5–7 sentences. That's it. Short is good. Every sentence must earn its place.
+7. No bullet points. No headers. No bold text. Plain prose, like a real email.
+8. Forbidden phrases: "I hope this finds you well", "I wanted to reach out", "I came across your profile", "revolutionize", "cutting-edge", "seamlessly", "leverage", "pain points", "synergy", "game-changer", "touch base", "circle back", "at the end of the day".
+9. Subject line: conversational, 4–7 words, sounds like something a human would write. Not a marketing tagline.
+10. Sign off naturally with just the BDR's first name from: ${bdrName}
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "subject": "subject line here",
+  "body": "full email body here, with paragraph breaks as \\n\\n"
+}`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 800,
+        messages: [{ role: "user", content: emailPrompt }]
+      })
+    });
+
+    const data = await response.json();
+    clearInterval(msgInterval);
+
+    const fullText = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    let parsed;
+    try {
+      const jsonMatch = fullText.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch(e) { parsed = null; }
+
+    document.getElementById('email-loading').style.display = 'none';
+    document.getElementById('email-output').style.display = 'block';
+
+    if (parsed) {
+      document.getElementById('email-subject-display').textContent = parsed.subject;
+      document.getElementById('email-body-display').textContent = parsed.body;
+      document.getElementById('bdr-display').textContent = bdrName;
+      document.getElementById('prospect-display').textContent = `${p.fname} ${p.lname}`;
+    } else {
+      document.getElementById('email-subject-display').textContent = '(subject not parsed)';
+      document.getElementById('email-body-display').textContent = fullText;
+      document.getElementById('bdr-display').textContent = bdrName;
+      document.getElementById('prospect-display').textContent = `${p.fname} ${p.lname}`;
+    }
+
+  } catch(err) {
+    clearInterval(msgInterval);
+    document.getElementById('email-loading').style.display = 'none';
+    document.getElementById('email-output').style.display = 'block';
+    document.getElementById('email-body-display').textContent = `Error generating email: ${err.message}`;
+  }
+}
+
+function copyEmail(btn) {
+  const subject = document.getElementById('email-subject-display').textContent;
+  const body = document.getElementById('email-body-display').textContent;
+  const full = `Subject: ${subject}\n\n${body}`;
+  navigator.clipboard.writeText(full).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); btn.textContent = 'Copy Email'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+function resetAll() {
+  document.getElementById('fname').value = '';
+  document.getElementById('lname').value = '';
+  document.getElementById('title').value = '';
+  document.getElementById('company').value = '';
+  document.getElementById('linkedin').value = '';
+  document.getElementById('extra-notes').value = '';
+  state.urls = [];
+  state.researchData = null;
+  state.persona = 'auto';
+  renderUrlTags();
+  document.querySelectorAll('.persona-pill').forEach(p => p.classList.remove('selected'));
+  document.querySelector('.persona-pill').classList.add('selected');
+  goToStep(1);
+  document.getElementById('step-nav-2').classList.remove('done', 'active');
+  document.getElementById('step-nav-3').classList.remove('done', 'active');
+}
+</script>
+</body>
+</html>
